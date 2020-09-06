@@ -37,8 +37,8 @@ public class JdbcCrawlerDao implements CrawlerDao {
 
     @Override
     public String readLinkThenRemoveFromDatabase() throws SQLException {
-        String SQL_SELECT_LINK_TO_BE_PROCESSED = "SELECT LINK FROM LINKS_TO_BE_PROCESSED LIMIT 1";
-        String SQL_REMOVE_LINK_TO_BE_PROCESSED = "DELETE FROM LINKS_TO_BE_PROCESSED WHERE LINK = ?";
+        String SQL_SELECT_LINK_TO_BE_PROCESSED = "SELECT LINK FROM LINK_TO_BE_PROCESSED LIMIT 1";
+        String SQL_REMOVE_LINK_TO_BE_PROCESSED = "DELETE FROM LINK_TO_BE_PROCESSED WHERE LINK = ?";
         String link = readLinkFromDatabase(SQL_SELECT_LINK_TO_BE_PROCESSED);
         if (link != null) {
             updateDatabaseBySqlStatement(link, SQL_REMOVE_LINK_TO_BE_PROCESSED);
@@ -56,7 +56,7 @@ public class JdbcCrawlerDao implements CrawlerDao {
 
     @Override
     public void writeIntoNewsDatabase(String url, String title, String content) throws SQLException {
-        String SQL_INSERT_NEWS = "INSERT INTO NEWS (URL, TITLE, CONTENT, CREATED_AT, UPDATED_AT) VALUES (?,?,?.NOW(), NOW())";
+        String SQL_INSERT_NEWS = "INSERT INTO NEWS (URL, TITLE, CONTENT, CREATED_AT, UPDATED_AT) VALUES (?,?,?,NOW(),NOW())";
         try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_NEWS)) {
             preparedStatement.setString(1, url);
             preparedStatement.setString(2, title);

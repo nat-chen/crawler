@@ -73,8 +73,13 @@
             <artifactId>annotations</artifactId>
             <version>3.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -135,7 +140,7 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>6.5.5</version>
                 <configuration>
-                    <url>jdbc:h2:file:/Users/natchen/java/crawler/news</url>
+                    <url>jdbc:h2:file:/Users/natchen/Documents/java/crawler/news</url>
                     <user>root</user>
                     <password>root</password>
                 </configuration>

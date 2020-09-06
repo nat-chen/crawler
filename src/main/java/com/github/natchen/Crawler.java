@@ -33,11 +33,11 @@ public class Crawler {
             }
 
             if (isTargetLink(currentLink)) {
-                System.out.printf(currentLink);
+                System.out.println(currentLink);
                 Document currentHtml = fetchRequestAndParseHtml(currentLink);
                 parseUrlFromPageAndWriteIntoDatabase(currentHtml);
                 writeIntoDatabaseIfNewsPage(currentHtml, currentLink);
-                String SQL_INSERT_LINK_PROCESSED = "INSERT INTO LINKS_ALREADY_PROCESSED (link) values (?)";
+                String SQL_INSERT_LINK_PROCESSED = "INSERT INTO LINK_PROCESSED (link) values (?)";
                 dao.updateDatabaseBySqlStatement(currentLink, SQL_INSERT_LINK_PROCESSED);
             }
         }
