@@ -6,6 +6,12 @@ import java.sql.*;
 
 public class JdbcCrawlerDao implements CrawlerDao {
     private static final String USERNAME = "root";
+
+    @Override
+    public void writeNews(String url, String title, String content) throws SQLException {
+
+    }
+
     private static final String PASSWORD = "root";
 
     private final Connection connection;
@@ -19,7 +25,6 @@ public class JdbcCrawlerDao implements CrawlerDao {
         }
     }
 
-    @Override
     public String readLinkFromDatabase(String sql) throws SQLException {
         ResultSet resultSet = null;
         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -46,7 +51,6 @@ public class JdbcCrawlerDao implements CrawlerDao {
         return link;
     }
 
-    @Override
     public void updateDatabaseBySqlStatement(String link, String sql) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, link);
@@ -54,7 +58,6 @@ public class JdbcCrawlerDao implements CrawlerDao {
         }
     }
 
-    @Override
     public void writeIntoNewsDatabase(String url, String title, String content) throws SQLException {
         String SQL_INSERT_NEWS = "INSERT INTO NEWS (URL, TITLE, CONTENT, CREATED_AT, UPDATED_AT) VALUES (?,?,?,NOW(),NOW())";
         try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_NEWS)) {
@@ -83,5 +86,13 @@ public class JdbcCrawlerDao implements CrawlerDao {
         return false;
     }
 
+    @Override
+    public void writeLinkProcessed(String link) {
 
+    }
+
+    @Override
+    public void writeLinkToBeProcessed(String link) {
+
+    }
 }

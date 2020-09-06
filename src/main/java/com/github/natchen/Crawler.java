@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Crawler {
-    private final CrawlerDao dao = new JdbcCrawlerDao();
+    private final CrawlerDao dao = new MyBatisCrawlerDao();
 
     @SuppressFBWarnings("DMI_CONSTANT_DB_PASSWORD")
     public static void main(String[] args) throws IOException, SQLException {
@@ -37,8 +37,7 @@ public class Crawler {
                 Document currentHtml = fetchRequestAndParseHtml(currentLink);
                 parseUrlFromPageAndWriteIntoDatabase(currentHtml);
                 writeIntoDatabaseIfNewsPage(currentHtml, currentLink);
-                String SQL_INSERT_LINK_PROCESSED = "INSERT INTO LINK_PROCESSED (link) values (?)";
-                dao.updateDatabaseBySqlStatement(currentLink, SQL_INSERT_LINK_PROCESSED);
+                dao.writeLinkProcessed(currentLink);
             }
         }
     }
@@ -54,7 +53,7 @@ public class Crawler {
             }
 
             if (!link.toLowerCase().startsWith("javascript")) {
-                dao.updateDatabaseBySqlStatement(link, SQL_INSERT_LINK_TO_BE_PROCESSED);
+                dao.writeLinkToBeProcessed(link);
             }
         }
     }
@@ -65,14 +64,13 @@ public class Crawler {
             for (Element articleElement : articleElementList) {
                 String title = articleElementList.get(0).child(0).text();
                 String content = articleElement.select("p").stream().map(Element::text).collect(Collectors.joining("\n"));
-                dao.writeIntoNewsDatabase(link, title, content);
+                dao.writeNews(link, title, content);
             }
         }
     }
 
     @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
     private static Document fetchRequestAndParseHtml(String link) throws IOException {
-        System.out.println(link);
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(link);
         httpGet.setHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36");
