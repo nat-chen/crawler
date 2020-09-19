@@ -17,28 +17,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Crawler {
-    private final CrawlerDao dao = new MyBatisCrawlerDao();
+public class Crawler extends Thread {
+    private CrawlerDao dao;
 
-    @SuppressFBWarnings("DMI_CONSTANT_DB_PASSWORD")
-    public static void main(String[] args) throws IOException, SQLException {
-        new Crawler().run();
+    public Crawler(CrawlerDao dao) {
+        this.dao = dao;
     }
 
-    public void run() throws SQLException, IOException {
-        String currentLink;
-        while ((currentLink = dao.readLinkThenRemoveFromDatabase()) != null) {
-            if (dao.isLinkPrecessed(currentLink)) {
-                continue;
-            }
+    @Override
+    public void run() {
+        try {
+            String currentLink;
+            while ((currentLink = dao.readLinkThenRemoveFromDatabase()) != null) {
+                if (dao.isLinkPrecessed(currentLink)) {
+                    continue;
+                }
 
-            if (isTargetLink(currentLink)) {
-                System.out.println(currentLink);
-                Document currentHtml = fetchRequestAndParseHtml(currentLink);
-                parseUrlFromPageAndWriteIntoDatabase(currentHtml);
-                writeIntoDatabaseIfNewsPage(currentHtml, currentLink);
-                dao.writeLinkProcessed(currentLink);
+                if (isTargetLink(currentLink)) {
+                    System.out.println(currentLink);
+                    Document currentHtml = fetchRequestAndParseHtml(currentLink);
+                    parseUrlFromPageAndWriteIntoDatabase(currentHtml);
+                    writeIntoDatabaseIfNewsPage(currentHtml, currentLink);
+                    dao.writeLinkProcessed(currentLink);
+                }
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

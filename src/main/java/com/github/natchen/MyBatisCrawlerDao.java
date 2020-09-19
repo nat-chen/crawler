@@ -9,6 +9,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class MyBatisCrawlerDao implements CrawlerDao {
 
     @Override
     @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
-    public String readLinkThenRemoveFromDatabase() throws SQLException {
+    public synchronized String readLinkThenRemoveFromDatabase() throws SQLException {
         try (SqlSession session = sqlSessionFactory.openSession(true)) {
             String url = session.selectOne("com.github.natchen.MyMapper.selectNextAvailableLink");
             if (url != null) {
@@ -41,7 +42,7 @@ public class MyBatisCrawlerDao implements CrawlerDao {
     @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE")
     public void writeNews(String url, String title, String content) throws SQLException {
        try (SqlSession session = sqlSessionFactory.openSession(true)) {
-           session.insert("com.github.natchen.MyMapper.insertNews", new News(url, title, content));
+           session.insert("com.github.natchen.MyMapper.insertNews", new News(url, title, content, Instant.now(), Instant.now()));
        }
     }
 
